@@ -1,0 +1,55 @@
+/* ─────────────────────────────────────────────────────────────────────────────
+   THEME: JOURNAL
+   The same pages, a little more everyday: clean warm paper, a friendly serif,
+   a handwritten day number and a notebook margin line. Not an antique.
+   ───────────────────────────────────────────────────────────────────────────── */
+
+[data-theme='journal'] body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  background:
+    var(--tex-journal-grain),
+    radial-gradient(110% 70% at 50% 0%, rgba(255, 255, 255, 0.85), rgba(255, 255, 255, 0) 60%),
+    linear-gradient(180deg, var(--paper-hi), var(--paper) 45%, var(--paper-lo));
+}
+
+[data-theme='journal'] .titlepage__title {
+  letter-spacing: -0.015em;
+}
+
+[data-theme='journal'] .titlepage__seal {
+  width: 3.75rem;
+}
+
+/* The notebook margin: a thin red line down the left of the entries. */
+[data-theme='journal'] .entries {
+  padding-left: clamp(0.9rem, 3vw, 1.6rem);
+  border-left: 2px solid rgba(190, 85, 80, 0.38);
+}
+
+[data-theme='journal'] .group__title {
+  font-size: 1.3rem;
+  font-style: italic;
+  font-weight: 500;
+  color: var(--accent);
+}
+
+[data-theme='journal'] .entry__heading {
+  font-size: 1.3rem;
+  font-weight: 600;
+}
+
+[data-theme='journal'] .entry__summary {
+  font-size: 1rem;
+}
+
+[data-theme='journal'] .prose img {
+  border-radius: 4px;
+  box-shadow: 0 1px 6px rgba(40, 30, 15, 0.22);
+}
+
+[data-theme='journal'] .prose h2 {
+  font-size: 1.5em;
+}

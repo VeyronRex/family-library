@@ -1,0 +1,167 @@
+/* ─────────────────────────────────────────────────────────────────────────────
+   FILTERS
+   The search box and the Year / Month / Topic buttons above a list of entries.
+   They only appear when JavaScript is running (otherwise every entry is just
+   listed, which is also fine).
+   ───────────────────────────────────────────────────────────────────────────── */
+
+.filters {
+  display: none;
+  margin-bottom: clamp(1.75rem, 4vw, 2.75rem);
+  padding: 1.1rem 1.25rem 1rem;
+  background: var(--callout-bg);
+  border: 1px solid var(--rule);
+  border-radius: 3px;
+}
+
+.js .filters {
+  display: block;
+}
+
+.filters__search {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.25rem 1rem;
+  margin-bottom: 0.9rem;
+}
+
+.filters__search label,
+.filters__label {
+  flex: none;
+  width: 5.25rem;
+  font-style: italic;
+  color: var(--ink-soft);
+}
+
+.filters__search input {
+  flex: 1 1 14rem;
+  min-width: 0;
+  padding: 0.3rem 0.1rem;
+  font: inherit;
+  color: var(--ink);
+  background: transparent;
+  border: 0;
+  border-bottom: 1px solid var(--rule);
+  border-radius: 0;
+}
+
+.filters__search input::placeholder {
+  font-style: italic;
+  color: var(--ink-soft);
+  opacity: 0.8;
+}
+
+.filters__search input:focus-visible {
+  outline: none;
+  border-bottom-color: var(--accent);
+  box-shadow: 0 1px 0 var(--accent);
+}
+
+.filters__group {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.3rem 1rem;
+  margin-top: 0.55rem;
+}
+
+.chips {
+  display: flex;
+  flex: 1 1 16rem;
+  flex-wrap: wrap;
+  gap: 0.35rem 0.4rem;
+}
+
+.chip {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 0.4rem;
+  padding: 0.1rem 0.75rem 0.15rem;
+  font: inherit;
+  font-size: 0.92rem;
+  line-height: 1.5;
+  color: var(--ink);
+  cursor: pointer;
+  background: var(--chip-bg);
+  border: 1px solid var(--chip-border);
+  border-radius: var(--chip-radius);
+}
+
+.chip:hover:not(:disabled) {
+  color: var(--accent-hover);
+  border-color: currentColor;
+}
+
+.chip[aria-pressed='true'] {
+  color: var(--paper-hi);
+  background: var(--accent);
+  border-color: var(--accent);
+}
+
+.chip:disabled {
+  cursor: not-allowed;
+  opacity: 0.38;
+}
+
+.chip__count {
+  font-size: 0.78em;
+  opacity: 0.75;
+  font-variant-numeric: tabular-nums;
+}
+
+.filters__status {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.25rem 1rem;
+  margin-top: 0.9rem;
+  padding-top: 0.7rem;
+  border-top: 1px solid var(--rule-soft);
+}
+
+.filters__count {
+  margin: 0;
+  font-size: 0.95em;
+  font-style: italic;
+  color: var(--ink-soft);
+}
+
+.filters__clear,
+.filters__more {
+  padding: 0;
+  font: inherit;
+  font-size: 0.95em;
+  color: var(--accent);
+  cursor: pointer;
+  background: none;
+  border: 0;
+  text-decoration: underline;
+  text-underline-offset: 0.2em;
+}
+
+.filters__more {
+  flex-basis: 100%;
+  margin-left: 6.25rem;
+  text-align: left;
+}
+
+.chip[data-extra] {
+  display: none;
+}
+
+.filters__group.is-expanded .chip[data-extra] {
+  display: inline-flex;
+}
+
+@media (max-width: 36rem) {
+  .filters__search label,
+  .filters__label {
+    width: 100%;
+  }
+
+  .filters__more {
+    margin-left: 0;
+  }
+}

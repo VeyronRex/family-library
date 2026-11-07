@@ -1,0 +1,121 @@
+/* ─────────────────────────────────────────────────────────────────────────────
+   DESIGN TOKENS
+   The colours and fonts of the whole site live here. Change a value once and it
+   changes everywhere. Nothing else in the CSS contains a raw colour that matters.
+   ───────────────────────────────────────────────────────────────────────────── */
+
+:root {
+  /* The library room: wine-red walls, dark walnut, gold leaf, candlelight */
+  --wine-950: #1d0b0f;
+  --wine-900: #2e0e16;
+  --wine-800: #3f121d;
+  --wine-700: #521726;
+  --wine-600: #6a1e30;
+
+  --walnut-950: #160c06;
+  --walnut-900: #21130a;
+  --walnut-800: #2d1a0e;
+  --walnut-700: #3d2412;
+  --walnut-600: #52331a;
+  --walnut-500: #6b4425;
+
+  --gold-100: #f8ecc0;
+  --gold-200: #f0d98f;
+  --gold-300: #e3c06a;
+  --gold-400: #d4a949;
+  --gold-500: #b98d32;
+  --gold-600: #946a1d;
+  --gold-700: #6e4d12;
+
+  --candle: #ffcf85;
+  --candle-hot: #fff0c4;
+
+  /* Gold foil, for letters and borders */
+  --foil: linear-gradient(115deg, #f7e6a8 0%, #dcb862 22%, #a6792a 46%, #ecd48e 68%, #b78a30 88%, #f1da97 100%);
+
+  /* Gold leaf pressed into leather: the letters and lines on book spines */
+  --gilt: #ebcb74;
+  --gilt-dim: rgba(235, 203, 116, 0.62);
+
+  /* Letters. Each list ends with fonts that already exist on most devices, so the
+     page still looks right if the web fonts cannot load. */
+  --font-caps: 'Cinzel', 'Trajan Pro', 'Palatino Linotype', 'Book Antiqua', Palatino, Georgia, serif;
+  --font-old: 'IM Fell English', 'Iowan Old Style', 'Palatino Linotype', 'Book Antiqua', Palatino, Georgia, serif;
+  --font-old-body: 'EB Garamond', 'Iowan Old Style', 'Palatino Linotype', 'Book Antiqua', Palatino, Georgia, serif;
+  --font-modern: 'Lora', Charter, 'Bitstream Charter', 'Sitka Text', Cambria, Georgia, serif;
+  --font-hand: 'Caveat', 'Segoe Print', 'Bradley Hand', 'Comic Sans MS', cursive;
+  --font-mono: ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
+}
+
+/* ── Page themes ──────────────────────────────────────────────────────────────
+   A theme only has to fill in the names below. The shared page styles use these
+   names and nothing else, so a new theme never needs new layout code.        */
+
+/* Old paper: for About and the Blog */
+[data-theme='parchment'] {
+  --paper: #e4cf9f;
+  --paper-hi: #f1e4bd;
+  --paper-lo: #c9ab6e;
+  --ink: #2a1b10;
+  --ink-soft: #52391f;
+  --accent: #7a1c1c;
+  --accent-hover: #a3271f;
+  --rule: rgba(84, 56, 24, 0.42);
+  --rule-soft: rgba(84, 56, 24, 0.22);
+  --ornament: #6b4a22;
+  --focus: #7a1c1c;
+
+  --font-display: var(--font-old);
+  --font-body: var(--font-old-body);
+  --font-nav: var(--font-caps);
+  --nav-size: 0.95rem;
+  --nav-tracking: 0.05em;
+  --nav-weight: 600;
+
+  --text-size: 1.3rem;
+  --text-leading: 1.65;
+  --title-weight: 400;
+
+  --chip-radius: 2px;
+  --chip-bg: rgba(255, 247, 218, 0.45);
+  --chip-border: rgba(84, 56, 24, 0.55);
+  --callout-bg: rgba(255, 246, 214, 0.38);
+}
+
+/* Lighter and more everyday: for the Journal */
+[data-theme='journal'] {
+  --paper: #f7f2e7;
+  --paper-hi: #fcfaf4;
+  --paper-lo: #ece3cf;
+  --ink: #2a2723;
+  --ink-soft: #5a554c;
+  --accent: #2b5a4d;
+  --accent-hover: #1b4034;
+  --rule: rgba(60, 50, 35, 0.22);
+  --rule-soft: rgba(60, 50, 35, 0.12);
+  --ornament: #8a8068;
+  --focus: #2b5a4d;
+
+  --font-display: var(--font-modern);
+  --font-body: var(--font-modern);
+  --font-nav: var(--font-modern);
+  --nav-size: 0.98rem;
+  --nav-tracking: 0;
+  --nav-weight: 500;
+
+  --text-size: 1.15rem;
+  --text-leading: 1.75;
+  --title-weight: 600;
+
+  --chip-radius: 999px;
+  --chip-bg: rgba(255, 255, 255, 0.6);
+  --chip-border: rgba(60, 50, 35, 0.3);
+  --callout-bg: rgba(255, 255, 255, 0.55);
+}
+
+/* The library room */
+[data-theme='room'] {
+  --paper: var(--wine-950);
+  --ink: var(--gold-100);
+  --focus: var(--gold-300);
+}

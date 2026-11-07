@@ -1,0 +1,65 @@
+# Publishes your website, for free, on GitHub Pages.
+#
+# It runs by itself every time you save a change on GitHub (a new post, a
+# fixed typo, anything). A minute or two later the change is live.
+# You never need to edit this file.
+#
+# If it ever fails, open the "Actions" tab of your repository, click the red
+# cross, and read the message. It tells you which file to fix.
+
+name: Publish the website
+
+on:
+  push:
+    branches: [main, master]
+  workflow_dispatch: # also lets you press "Run workflow" by hand
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# If two changes are saved quickly, only the newest one is published.
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Get the files
+        uses: actions/checkout@v4
+
+      - name: Install Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      # Asks GitHub where the site will live. For yourname.github.io the path is
+      # empty; for a repository called "diary" it is "/diary". A custom domain
+      # is handled too. The site builder uses this to make every link correct.
+      - name: Find the website's address
+        id: pages
+        uses: actions/configure-pages@v5
+
+      - name: Build the website
+        run: node scripts/build.mjs
+        env:
+          SITE_BASE: ${{ steps.pages.outputs.base_path }}
+
+      - name: Pack the website
+        uses: actions/upload-pages-artifact@v4
+        with:
+          path: dist
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Publish
+        id: deployment
+        uses: actions/deploy-pages@v4

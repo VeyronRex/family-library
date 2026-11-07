@@ -1,0 +1,9 @@
+# The finished website is made fresh by the build; it is not stored.
+dist/
+
+# Only used if you ever install extra tools.
+node_modules/
+
+# Files your computer adds by itself.
+.DS_Store
+Thumbs.db

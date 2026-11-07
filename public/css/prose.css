@@ -1,0 +1,241 @@
+/* ─────────────────────────────────────────────────────────────────────────────
+   PROSE
+   How the things you write in Markdown look: paragraphs, headings, lists,
+   quotes, pictures and the special boxes (::: lesson, ::: letter …).
+   It borrows every colour and font from the current theme.
+   ───────────────────────────────────────────────────────────────────────────── */
+
+:root {
+  /* The divider ornament, as a shape that takes the colour of --ornament */
+  --mask-ornament: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 240 20'><path d='M6 10H96M144 10H234' fill='none' stroke='black' stroke-width='1.4'/><path d='M120 3L127 10L120 17L113 10Z'/><circle cx='104' cy='10' r='2.4'/><circle cx='136' cy='10' r='2.4'/></svg>");
+}
+
+.prose {
+  max-width: 36em;
+  margin-inline: auto;
+  overflow-wrap: break-word;
+}
+
+/* The space between blocks is decided in ONE place: the "* + *" rule below.
+   So the browser's own margins are switched off first. :where() gives this
+   reset no weight at all, which means every rule written after it can still
+   set its own spacing without a fight. (Do not put "margin" on a bare "p"
+   rule: it would be stronger than "* + *" and glue paragraphs together.) */
+.prose :where(p, ul, ol, blockquote, pre, h2, h3, h4) {
+  margin-block: 0;
+}
+
+.prose > :first-child {
+  margin-top: 0;
+}
+
+.prose > * + * {
+  margin-top: 1.15em;
+}
+
+.prose p {
+  text-wrap: pretty;
+}
+
+.prose h2,
+.prose h3,
+.prose h4 {
+  font-family: var(--font-display);
+  font-weight: var(--title-weight);
+  line-height: 1.2;
+  text-wrap: balance;
+  color: var(--ink);
+}
+
+.prose h2 {
+  margin-top: 2em;
+  font-size: 1.75em;
+}
+
+.prose h3 {
+  margin-top: 1.7em;
+  font-size: 1.35em;
+  font-style: italic;
+}
+
+.prose h4 {
+  margin-top: 1.5em;
+  font-size: 1.1em;
+}
+
+.prose h2 + *,
+.prose h3 + *,
+.prose h4 + * {
+  margin-top: 0.6em;
+}
+
+.prose a {
+  color: var(--accent);
+  text-decoration: underline;
+  text-decoration-thickness: 0.07em;
+  text-underline-offset: 0.2em;
+}
+
+.prose a:hover {
+  color: var(--accent-hover);
+}
+
+.prose strong {
+  font-weight: 600;
+}
+
+.prose ul,
+.prose ol {
+  padding-left: 1.5em;
+}
+
+.prose li + li {
+  margin-top: 0.4em;
+}
+
+.prose li > * + * {
+  margin-top: 0.5em;
+}
+
+.prose li::marker {
+  color: var(--accent);
+}
+
+.prose blockquote {
+  margin-inline: 0;
+  padding: 0.1em 0 0.1em 1.3em;
+  font-style: italic;
+  color: var(--ink-soft);
+  border-left: 3px double var(--accent);
+}
+
+.prose blockquote > * + * {
+  margin-top: 0.8em;
+}
+
+.prose hr {
+  width: min(15rem, 70%);
+  height: 1.1rem;
+  margin: 2.6em auto;
+  border: 0;
+  background: var(--ornament);
+  -webkit-mask: var(--mask-ornament) center / contain no-repeat;
+  mask: var(--mask-ornament) center / contain no-repeat;
+}
+
+.prose code {
+  padding: 0.1em 0.35em;
+  font-family: var(--font-mono);
+  font-size: 0.82em;
+  background: rgba(0, 0, 0, 0.07);
+  border-radius: 3px;
+}
+
+.prose pre {
+  padding: 1em 1.2em;
+  overflow-x: auto;
+  background: rgba(0, 0, 0, 0.07);
+  border-radius: 3px;
+}
+
+.prose pre code {
+  padding: 0;
+  background: none;
+}
+
+.prose table {
+  display: block;
+  width: 100%;
+  overflow-x: auto;
+  border-collapse: collapse;
+}
+
+.prose th,
+.prose td {
+  padding: 0.5em 0.8em;
+  text-align: left;
+  border-bottom: 1px solid var(--rule);
+}
+
+.prose iframe,
+.prose video {
+  display: block;
+  width: 100%;
+  max-width: 100%;
+  aspect-ratio: 16 / 9;
+  border: 0;
+}
+
+/* Pictures. A caption appears when you write one: ![alt](file.jpg "Caption") */
+
+.prose img {
+  display: block;
+  margin-inline: auto;
+}
+
+.figure {
+  display: block;
+  margin-block: 1.9em;
+  text-align: center;
+}
+
+.figure__caption {
+  display: block;
+  margin-top: 0.7em;
+  font-size: 0.9em;
+  font-style: italic;
+  color: var(--ink-soft);
+  text-wrap: balance;
+}
+
+/* Special boxes: ::: lesson … :::  */
+
+.callout {
+  --callout-accent: var(--ink-soft);
+  margin-block: 1.9em;
+  padding: 1rem 1.3rem 1.1rem;
+  background: var(--callout-bg);
+  border: 1px solid var(--rule);
+  border-left: 4px solid var(--callout-accent);
+  border-radius: 2px;
+}
+
+.callout__label {
+  margin: 0 0 0.35em !important;
+  font-family: var(--font-display);
+  font-size: 1.05em;
+  font-style: italic;
+  color: var(--callout-accent);
+}
+
+.callout__body > * + * {
+  margin-top: 0.8em;
+}
+
+.callout--lesson {
+  --callout-accent: var(--accent);
+}
+
+.callout--memory {
+  --callout-accent: #7a4f10;
+}
+
+.callout--note {
+  --callout-accent: var(--ink-soft);
+  font-size: 0.92em;
+  border-style: dashed;
+  border-left-width: 1px;
+}
+
+/* A letter is set apart: double border, and the writing leans like handwriting. */
+.callout--letter {
+  --callout-accent: var(--ink);
+  padding: 1.25rem 1.6rem 1.4rem;
+  border: 4px double var(--ornament);
+}
+
+.callout--letter .callout__body {
+  font-family: var(--font-display);
+  font-size: 1.1em;
+  font-style: italic;
+}

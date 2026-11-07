@@ -1,0 +1,690 @@
+/* ─────────────────────────────────────────────────────────────────────────────
+   THE ROOM
+   The royal library: wine-red wallpaper, dark panelled walls, a polished floor
+   with a rug, a window, a painting and candlelight. Everything is drawn with
+   gradients, so nothing is downloaded and it stays sharp on every screen.
+
+   SIZES: the whole room is measured in "design units" (--u). One unit is a
+   fraction of the screen, so the room scales to fit any window.
+   The room is designed on a stage 1200 units wide.
+   ───────────────────────────────────────────────────────────────────────────── */
+
+html[data-theme='room'],
+html[data-theme='room'] body {
+  height: 100%;
+  overflow: hidden;
+  background: var(--wine-950);
+}
+
+.room {
+  /* Tall rooms (more shelves) get a larger --scene-h, so they still fit. */
+  --hero-scale: 1; /* real books are taller on phones */
+  --zoom: 1; /* and thicker */
+  --hero-sum: 216;
+  --stand: 24; /* how far the bookcase stands in front of the wall */
+  --scene-eff: calc(var(--scene-h) + var(--hero-sum) * (var(--hero-scale) - 1));
+  --u: min(calc(100vw / 1200), calc(100vh / var(--scene-eff)));
+  --horizon: calc(50% + var(--u) * (var(--scene-eff) / 2 - var(--floor-h)));
+
+  position: fixed;
+  inset: 0;
+  overflow: hidden;
+  isolation: isolate;
+  background: var(--wine-950);
+}
+
+/* Phones and tablets held upright: the bookcase fills the width. */
+@media (max-aspect-ratio: 1 / 1) {
+  .room {
+    --u: min(calc(100vw / 650), calc(100vh / var(--scene-eff)));
+    --hero-scale: 1.38;
+    --zoom: 1.42;
+  }
+
+  .scenery {
+    display: none;
+  }
+}
+
+/* A phone held sideways: the room is short, so make the books thicker (not
+   taller) to give a finger something to tap. */
+@media (orientation: landscape) and (max-height: 520px) {
+  .room {
+    --zoom: 1.5;
+  }
+}
+
+/* ── Wall, panelling, floor ─────────────────────────────────────────────── */
+
+.room__wall,
+.room__wainscot,
+.room__floor {
+  position: absolute;
+  left: -3%;
+  right: -3%;
+  will-change: transform;
+  transition: transform 0.4s cubic-bezier(0.2, 0.7, 0.2, 1);
+}
+
+.room__wall {
+  top: -3%;
+  height: calc(var(--horizon) + 3% + 28px);
+  background:
+    radial-gradient(ellipse 55% 65% at 50% 44%, rgba(255, 190, 115, 0.2), rgba(255, 190, 115, 0) 72%),
+    var(--tex-speckle-soft),
+    var(--tex-wallpaper),
+    linear-gradient(180deg, #34090f 0%, #4a1320 40%, #3c0f1a 100%);
+  background-size: auto, 240px 240px, calc(var(--u) * 92) calc(var(--u) * 133), auto;
+}
+
+/* The carved edge where the wall meets the ceiling. */
+.room__cornice {
+  position: absolute;
+  top: 0;
+  right: 0;
+  left: 0;
+  z-index: 3;
+  height: calc(var(--u) * 30);
+  background:
+    var(--tex-wood-h),
+    linear-gradient(
+      180deg,
+      #1c0f07 0,
+      #4a2f19 calc(var(--u) * 2),
+      #2c1a0d calc(var(--u) * 9),
+      #6a4624 calc(var(--u) * 10),
+      #3a2412 calc(var(--u) * 15),
+      #1c0f07 calc(var(--u) * 16),
+      #5a3a1e calc(var(--u) * 17),
+      #2a190c calc(var(--u) * 26),
+      #0f0803 100%
+    );
+  box-shadow:
+    0 calc(var(--u) * 9) calc(var(--u) * 22) rgba(0, 0, 0, 0.75),
+    inset 0 calc(var(--u) * -1.5) 0 rgba(212, 169, 73, 0.55);
+}
+
+/* Dark panelled wood on the lower wall, with a chair rail and a skirting board. */
+.room__wainscot {
+  z-index: 2;
+  top: calc(var(--horizon) - var(--u) * 150);
+  height: calc(var(--u) * 176);
+  background:
+    linear-gradient(180deg, rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0) 22%),
+    var(--tex-panel),
+    var(--tex-wood-v),
+    linear-gradient(90deg, #2a170b, #3a2111 50%, #2a170b);
+  background-size: 100% 100%, calc(var(--u) * 168) calc(var(--u) * 126), 320px 420px, 100% 100%;
+  background-position: 0 0, 0 calc(var(--u) * 10), 0 0, 0 0;
+  background-repeat: no-repeat, repeat-x, repeat, no-repeat;
+  box-shadow: 0 calc(var(--u) * -10) calc(var(--u) * 22) rgba(0, 0, 0, 0.55);
+}
+
+.room__wainscot::before,
+.room__wainscot::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+}
+
+/* chair rail */
+.room__wainscot::before {
+  top: 0;
+  height: calc(var(--u) * 17);
+  background:
+    linear-gradient(180deg, #8a5d34 0, #5e3b1e calc(var(--u) * 3), #3c2412 calc(var(--u) * 11), #6a4624 calc(var(--u) * 12), #2a170b 100%);
+  box-shadow:
+    0 calc(var(--u) * 5) calc(var(--u) * 8) rgba(0, 0, 0, 0.6),
+    inset 0 calc(var(--u) * -1) 0 rgba(212, 169, 73, 0.45);
+}
+
+/* skirting board, resting on the floor */
+.room__wainscot::after {
+  bottom: 0;
+  height: calc(var(--u) * 46);
+  background: linear-gradient(180deg, #4a2f19 0, #2e1a0c calc(var(--u) * 8), #3a2312 calc(var(--u) * 34), #170d06 100%);
+  box-shadow: inset 0 calc(var(--u) * 1.5) 0 rgba(255, 215, 160, 0.14);
+}
+
+.room__floor {
+  z-index: 1;
+  top: var(--horizon);
+  bottom: -3%;
+  overflow: hidden;
+  perspective: calc(var(--u) * 760);
+  perspective-origin: 50% 0;
+  background: #1a0d07;
+}
+
+.floor__plane {
+  position: absolute;
+  left: -45%;
+  right: -45%;
+  top: 0;
+  height: calc(var(--u) * 560);
+  transform-origin: 50% 0;
+  transform: rotateX(72deg);
+}
+
+/* Floorboards running away from you. Their edges meet far in the distance. */
+.floor__boards {
+  position: absolute;
+  inset: 0;
+  background:
+    repeating-linear-gradient(90deg, rgba(0, 0, 0, 0.62) 0 calc(var(--u) * 1.6), rgba(0, 0, 0, 0) calc(var(--u) * 1.6) calc(var(--u) * 64)),
+    repeating-linear-gradient(90deg, rgba(255, 190, 120, 0.07) 0 calc(var(--u) * 64), rgba(0, 0, 0, 0.1) calc(var(--u) * 64) calc(var(--u) * 128), rgba(255, 190, 120, 0.03) calc(var(--u) * 128) calc(var(--u) * 192)),
+    repeating-linear-gradient(0deg, rgba(0, 0, 0, 0.5) 0 calc(var(--u) * 1.4), rgba(0, 0, 0, 0) calc(var(--u) * 1.4) calc(var(--u) * 300)),
+    var(--tex-wood-h),
+    linear-gradient(180deg, #1a0d07 0%, #2c180d 55%, #3c2110 100%);
+}
+
+.floor__rug {
+  position: absolute;
+  left: 50%;
+  top: calc(var(--u) * 30);
+  width: calc(var(--u) * 700);
+  height: calc(var(--u) * 238);
+  transform: translateX(-50%);
+  filter: drop-shadow(0 calc(var(--u) * 6) calc(var(--u) * 10) rgba(0, 0, 0, 0.7));
+}
+
+.floor__rug svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+/* Moonlight from the window, falling on the floor. */
+.floor__moon {
+  position: absolute;
+  top: 0;
+  left: calc(50% - var(--u) * 590);
+  width: calc(var(--u) * 300);
+  height: 92%;
+  filter: blur(calc(var(--u) * 14));
+}
+
+/* the shape is cut on an inner layer, so the blur is not cut off with it */
+.floor__moon::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, rgba(150, 180, 255, 0), rgba(150, 180, 255, 0.2) 22%, rgba(150, 180, 255, 0) 100%);
+  clip-path: polygon(14% 0, 44% 0, 100% 100%, 26% 100%);
+}
+
+/* A polished-floor shine under the candles. */
+.floor__sheen {
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(ellipse 48% 100% at 50% 0%, rgba(255, 190, 110, 0.3), rgba(255, 190, 110, 0) 72%),
+    linear-gradient(180deg, rgba(0, 0, 0, 0.55), rgba(0, 0, 0, 0) 26%);
+}
+
+/* ── The stage: where everything standing in the room is placed ─────────── */
+
+.room__stage {
+  position: absolute;
+  top: calc(50% - var(--u) * var(--scene-eff) / 2);
+  left: calc(50% - var(--u) * 600);
+  z-index: 4;
+  width: calc(var(--u) * 1200);
+  height: calc(var(--u) * var(--scene-eff));
+}
+
+.scenery {
+  position: absolute;
+  inset: 0;
+  will-change: transform;
+  transition: transform 0.4s cubic-bezier(0.2, 0.7, 0.2, 1);
+}
+
+/* ── Window ─────────────────────────────────────────────────────────────── */
+
+.window {
+  position: absolute;
+  left: calc(var(--u) * 36);
+  bottom: calc(var(--u) * (var(--floor-h) + 176));
+  width: calc(var(--u) * 146);
+  height: calc(var(--u) * 330);
+}
+
+.window__frame {
+  position: absolute;
+  inset: 0;
+  border-radius: calc(var(--u) * 73) calc(var(--u) * 73) 0 0;
+  background: var(--tex-wood-v), linear-gradient(90deg, #4a2d17, #6b4425 45%, #3a2210);
+  box-shadow:
+    0 0 0 calc(var(--u) * 3) #160b05,
+    0 calc(var(--u) * 8) calc(var(--u) * 26) rgba(0, 0, 0, 0.75),
+    inset 0 0 0 calc(var(--u) * 1.5) rgba(212, 169, 73, 0.5);
+}
+
+.window__glass {
+  position: absolute;
+  inset: calc(var(--u) * 11);
+  overflow: hidden;
+  border-radius: calc(var(--u) * 62) calc(var(--u) * 62) 0 0;
+  background:
+    radial-gradient(circle at 22% 14%, #fff 0 0.6px, transparent 1.4px) 0 0 / 53px 47px,
+    radial-gradient(circle at 70% 30%, #ffe9c4 0 0.6px, transparent 1.4px) 0 0 / 71px 59px,
+    radial-gradient(circle at 40% 62%, #fff 0 0.5px, transparent 1.2px) 0 0 / 89px 61px,
+    linear-gradient(180deg, #080d27 0%, #18254f 42%, #34487a 72%, #7a7d99 100%);
+  box-shadow: inset 0 0 calc(var(--u) * 20) rgba(0, 0, 0, 0.7);
+}
+
+.window__moon {
+  position: absolute;
+  top: 17%;
+  right: 22%;
+  width: calc(var(--u) * 30);
+  height: calc(var(--u) * 30);
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 35%, #fffcea, #ece5c4 60%, #bfb88f);
+  box-shadow: 0 0 calc(var(--u) * 22) calc(var(--u) * 8) rgba(215, 228, 255, 0.4);
+}
+
+.window__hills {
+  position: absolute;
+  left: -10%;
+  right: -10%;
+  bottom: 0;
+  height: 32%;
+  background:
+    radial-gradient(ellipse 60% 100% at 25% 100%, #060b1b 0 98%, transparent 100%),
+    radial-gradient(ellipse 70% 78% at 80% 100%, #0a1126 0 98%, transparent 100%);
+}
+
+.window__bar {
+  position: absolute;
+  background: linear-gradient(90deg, #3a2210, #6b4425 50%, #3a2210);
+  box-shadow: 0 0 calc(var(--u) * 4) rgba(0, 0, 0, 0.6);
+}
+
+.window__bar--v {
+  top: calc(var(--u) * 10);
+  bottom: calc(var(--u) * 10);
+  left: calc(50% - var(--u) * 3.5);
+  width: calc(var(--u) * 7);
+}
+
+.window__bar--h {
+  top: 47%;
+  right: calc(var(--u) * 10);
+  left: calc(var(--u) * 10);
+  height: calc(var(--u) * 7);
+  background: linear-gradient(180deg, #6b4425, #3a2210);
+}
+
+.window__sill {
+  position: absolute;
+  right: calc(var(--u) * -12);
+  bottom: calc(var(--u) * -12);
+  left: calc(var(--u) * -12);
+  height: calc(var(--u) * 16);
+  background: linear-gradient(180deg, #7a5230, #4a2d17 40%, #24130a);
+  border-radius: calc(var(--u) * 2);
+  box-shadow: 0 calc(var(--u) * 8) calc(var(--u) * 14) rgba(0, 0, 0, 0.7);
+}
+
+/* Velvet curtains */
+.window__drape {
+  position: absolute;
+  top: calc(var(--u) * -22);
+  bottom: calc(var(--u) * -34);
+  width: calc(var(--u) * 58);
+  z-index: 2;
+  background:
+    repeating-linear-gradient(90deg, rgba(0, 0, 0, 0.42) 0 calc(var(--u) * 4), rgba(255, 220, 220, 0.07) calc(var(--u) * 4) calc(var(--u) * 10), rgba(0, 0, 0, 0.22) calc(var(--u) * 10) calc(var(--u) * 15)),
+    linear-gradient(180deg, #62182a, #451120 60%, #2e0a14);
+  filter: drop-shadow(0 calc(var(--u) * 6) calc(var(--u) * 10) rgba(0, 0, 0, 0.6));
+}
+
+.window__drape--left {
+  left: calc(var(--u) * -40);
+  clip-path: polygon(0 0, 100% 0, 80% 26%, 56% 56%, 64% 64%, 100% 100%, 0 100%);
+}
+
+.window__drape--right {
+  right: calc(var(--u) * -40);
+  clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%, 36% 64%, 44% 56%, 20% 26%);
+}
+
+.window__valance {
+  position: absolute;
+  top: calc(var(--u) * -44);
+  right: calc(var(--u) * -48);
+  left: calc(var(--u) * -48);
+  height: calc(var(--u) * 50);
+  z-index: 3;
+  border-radius: 0 0 50% 50% / 0 0 100% 100%;
+  background:
+    repeating-linear-gradient(90deg, rgba(0, 0, 0, 0.3) 0 calc(var(--u) * 6), rgba(255, 220, 220, 0.08) calc(var(--u) * 6) calc(var(--u) * 14)),
+    linear-gradient(180deg, #6e1c30, #4a1322);
+  box-shadow:
+    inset 0 calc(var(--u) * -3) 0 rgba(212, 169, 73, 0.75),
+    0 calc(var(--u) * 8) calc(var(--u) * 14) rgba(0, 0, 0, 0.55);
+}
+
+/* ── Wall candles ───────────────────────────────────────────────────────── */
+
+.sconce {
+  position: absolute;
+  bottom: calc(var(--u) * (var(--floor-h) + 300));
+  width: calc(var(--u) * 40);
+  height: calc(var(--u) * 100);
+}
+
+.sconce--left {
+  left: calc(var(--u) * 238);
+}
+
+.sconce--right {
+  left: calc(var(--u) * 922);
+}
+
+.sconce i {
+  position: absolute;
+  left: 50%;
+}
+
+.sconce__glow {
+  bottom: calc(var(--u) * 52);
+  width: calc(var(--u) * 340);
+  height: calc(var(--u) * 340);
+  transform: translate(-50%, 50%);
+  background: radial-gradient(circle, rgba(255, 200, 120, 0.34), rgba(255, 170, 80, 0.13) 34%, rgba(255, 150, 60, 0) 66%);
+  animation: glow 4.2s ease-in-out infinite;
+}
+
+.sconce__plate {
+  bottom: 0;
+  width: calc(var(--u) * 20);
+  height: calc(var(--u) * 46);
+  transform: translateX(-50%);
+  border-radius: 50% / 40%;
+  background: linear-gradient(90deg, #6e4d12, #e3c06a 45%, #8a6418);
+  box-shadow: 0 calc(var(--u) * 3) calc(var(--u) * 6) rgba(0, 0, 0, 0.7);
+}
+
+.sconce__arm {
+  bottom: calc(var(--u) * 30);
+  width: calc(var(--u) * 34);
+  height: calc(var(--u) * 16);
+  transform: translateX(-50%);
+  border-bottom: calc(var(--u) * 3.5) solid #c79a3e;
+  border-radius: 0 0 50% 50%;
+}
+
+.sconce__cup {
+  bottom: calc(var(--u) * 44);
+  width: calc(var(--u) * 20);
+  height: calc(var(--u) * 9);
+  transform: translateX(-50%);
+  border-radius: 0 0 50% 50% / 0 0 100% 100%;
+  background: linear-gradient(90deg, #8a6418, #f0d98f 45%, #8a6418);
+}
+
+.sconce__wax {
+  bottom: calc(var(--u) * 52);
+  width: calc(var(--u) * 9);
+  height: calc(var(--u) * 24);
+  transform: translateX(-50%);
+  border-radius: calc(var(--u) * 2) calc(var(--u) * 2) 0 0;
+  background: linear-gradient(90deg, #cdbf94, #fff6d6 45%, #c3b384);
+}
+
+.sconce__flame {
+  bottom: calc(var(--u) * 74);
+  width: calc(var(--u) * 9);
+  height: calc(var(--u) * 19);
+  transform: translateX(-50%);
+  border-radius: 50% 50% 50% 50% / 62% 62% 38% 38%;
+  background: radial-gradient(ellipse at 50% 72%, #fff8d8 0, #ffd46f 38%, #ff9b3d 72%, rgba(255, 140, 40, 0) 100%);
+  box-shadow: 0 0 calc(var(--u) * 14) calc(var(--u) * 5) rgba(255, 190, 100, 0.6);
+  transform-origin: 50% 100%;
+  animation: flicker 3.1s ease-in-out infinite;
+}
+
+.sconce--right .sconce__flame {
+  animation-delay: -1.3s;
+}
+
+/* ── Painting ───────────────────────────────────────────────────────────── */
+
+.painting {
+  position: absolute;
+  left: calc(var(--u) * 1000);
+  bottom: calc(var(--u) * (var(--floor-h) + 236));
+  width: calc(var(--u) * 166);
+  height: calc(var(--u) * 206);
+}
+
+.painting__frame {
+  position: absolute;
+  inset: 0;
+  border-radius: calc(var(--u) * 3);
+  background: var(--foil);
+  box-shadow:
+    0 calc(var(--u) * 8) calc(var(--u) * 24) rgba(0, 0, 0, 0.75),
+    inset 0 0 0 calc(var(--u) * 2) rgba(90, 60, 10, 0.7),
+    inset 0 0 0 calc(var(--u) * 6) rgba(255, 238, 180, 0.35),
+    inset 0 0 0 calc(var(--u) * 7.5) rgba(110, 77, 18, 0.7);
+}
+
+.painting__canvas {
+  position: absolute;
+  inset: calc(var(--u) * 16);
+  overflow: hidden;
+  background: linear-gradient(180deg, #1b2548 0%, #5e4668 42%, #d98a58 72%, #f5c678 100%);
+  box-shadow: inset 0 0 calc(var(--u) * 16) rgba(0, 0, 0, 0.75);
+}
+
+.painting__sun {
+  position: absolute;
+  left: 50%;
+  bottom: 26%;
+  width: calc(var(--u) * 38);
+  height: calc(var(--u) * 38);
+  transform: translateX(-50%);
+  border-radius: 50%;
+  background: radial-gradient(circle, #fff3c8 0, #ffd37a 52%, rgba(255, 211, 122, 0) 72%);
+}
+
+.painting__hills {
+  position: absolute;
+  left: -12%;
+  right: -12%;
+  bottom: -8%;
+  height: 40%;
+  background:
+    radial-gradient(ellipse 60% 100% at 24% 100%, #2b1b1f 0 98%, transparent 100%),
+    radial-gradient(ellipse 66% 82% at 78% 100%, #1a1220 0 98%, transparent 100%);
+}
+
+.painting__plate {
+  position: absolute;
+  left: 50%;
+  bottom: calc(var(--u) * -15);
+  width: calc(var(--u) * 58);
+  height: calc(var(--u) * 10);
+  transform: translateX(-50%);
+  border-radius: calc(var(--u) * 1.5);
+  background: var(--foil);
+  box-shadow: 0 calc(var(--u) * 3) calc(var(--u) * 6) rgba(0, 0, 0, 0.6);
+}
+
+/* ── Drifting dust in the candlelight ───────────────────────────────────── */
+
+.dust {
+  position: absolute;
+  inset: 0;
+  z-index: 6;
+  pointer-events: none;
+}
+
+.dust i {
+  position: absolute;
+  left: calc(var(--x) * 1%);
+  top: calc(var(--y) * 1%);
+  width: calc(var(--s) * 1.6px);
+  height: calc(var(--s) * 1.6px);
+  border-radius: 50%;
+  background: rgba(255, 226, 170, 0.75);
+  opacity: 0;
+  animation: drift calc(var(--t) * 1s) ease-in-out infinite;
+  animation-delay: calc(var(--delay) * 1s);
+}
+
+/* ── Caption: tells you which book you are pointing at ──────────────────── */
+
+.room__caption {
+  position: absolute;
+  left: 50%;
+  bottom: calc(var(--u) * 16);
+  z-index: 7;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.2em;
+  min-width: 15em;
+  max-width: 92%;
+  margin: 0;
+  padding: 0.5em 1.6em 0.55em;
+  font-size: max(14px, calc(var(--u) * 16));
+  text-align: center;
+  color: var(--gold-200);
+  background: linear-gradient(180deg, rgba(22, 8, 10, 0.78), rgba(10, 3, 5, 0.82));
+  border: 1px solid rgba(212, 169, 73, 0.5);
+  border-radius: 3px;
+  box-shadow:
+    0 calc(var(--u) * 6) calc(var(--u) * 16) rgba(0, 0, 0, 0.6),
+    inset 0 0 0 3px rgba(0, 0, 0, 0.25),
+    inset 0 0 0 4px rgba(212, 169, 73, 0.16);
+  transform: translateX(-50%);
+  pointer-events: none;
+}
+
+.caption__title {
+  font-family: var(--font-caps);
+  font-size: 1.12em;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  color: var(--gold-200);
+  transition: color 0.3s;
+}
+
+.caption__tagline {
+  min-height: 1.35em;
+  font-family: var(--font-old);
+  font-size: 0.95em;
+  font-style: italic;
+  color: var(--gold-100);
+  transition: opacity 0.3s;
+}
+
+.room__caption.is-idle .caption__title {
+  color: rgba(240, 217, 143, 0.72);
+  font-weight: 500;
+}
+
+.room__caption.is-idle .caption__tagline {
+  opacity: 0;
+}
+
+/* ── Light and shadow laid over everything ──────────────────────────────── */
+
+.room__light {
+  position: absolute;
+  inset: 0;
+  z-index: 8;
+  pointer-events: none;
+  background:
+    radial-gradient(ellipse 46% 56% at 50% 46%, rgba(255, 196, 120, 0.12), rgba(255, 196, 120, 0) 72%),
+    radial-gradient(ellipse 118% 96% at 50% 46%, rgba(0, 0, 0, 0) 46%, rgba(10, 3, 4, 0.58) 80%, rgba(4, 1, 2, 0.9) 100%);
+}
+
+/* The room fades in when you arrive and fades to paper when you open a book. */
+.room__veil {
+  position: absolute;
+  inset: 0;
+  z-index: 20;
+  pointer-events: none;
+  background: var(--wine-950);
+  opacity: 0;
+  animation: arrive 1.2s ease-out 0.05s backwards;
+  transition: opacity 0.6s ease, background-color 0.6s ease;
+}
+
+.room.is-leaving .room__veil {
+  background: #e6d3a4;
+  opacity: 1;
+}
+
+/* ── Motion ─────────────────────────────────────────────────────────────── */
+
+@keyframes arrive {
+  from {
+    opacity: 1;
+  }
+
+  to {
+    opacity: 0;
+  }
+}
+
+@keyframes flicker {
+  0%,
+  100% {
+    transform: translateX(-50%) scale(1, 1);
+    opacity: 1;
+  }
+
+  18% {
+    transform: translateX(-52%) scale(0.94, 1.07);
+    opacity: 0.92;
+  }
+
+  42% {
+    transform: translateX(-48%) scale(1.05, 0.95);
+    opacity: 1;
+  }
+
+  68% {
+    transform: translateX(-51%) scale(0.97, 1.05);
+    opacity: 0.94;
+  }
+}
+
+@keyframes glow {
+  0%,
+  100% {
+    opacity: 1;
+  }
+
+  35% {
+    opacity: 0.8;
+  }
+
+  62% {
+    opacity: 0.94;
+  }
+}
+
+@keyframes drift {
+  0% {
+    opacity: 0;
+    transform: translate(0, 0);
+  }
+
+  25% {
+    opacity: 0.8;
+  }
+
+  100% {
+    opacity: 0;
+    transform: translate(18px, -42px);
+  }
+}

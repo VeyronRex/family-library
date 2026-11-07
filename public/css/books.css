@@ -1,0 +1,681 @@
+/* ─────────────────────────────────────────────────────────────────────────────
+   THE BOOKS
+   Your real books are little 3D boxes: a spine facing you, a front cover on the
+   right-hand side and a top. At rest you only see the spine. Point at one and it
+   slides out and turns, so you can see its cover.
+
+   Around them stand old decorative books ("tomes") and a few objects. They are
+   not links; they only make the shelves feel lived-in.
+
+   Sizes are in design units (see room.css). The three numbers on each book
+   (--w width, --h height, --d depth) come from config/books.mjs.
+   ───────────────────────────────────────────────────────────────────────────── */
+
+/* ── Leather colours ────────────────────────────────────────────────────────
+   Each leather has three shades: a highlight, the main colour and a shadow.
+   To add a colour: add a line here, and add its name to LEATHERS in
+   scripts/lib/books.mjs (decorative books use the same names).            */
+
+[data-leather='oxblood'],
+[data-tone='oxblood'] {
+  --l1: #93303a;
+  --l2: #6b1c27;
+  --l3: #340a11;
+}
+
+[data-leather='emerald'],
+[data-tone='emerald'] {
+  --l1: #2f7b5b;
+  --l2: #1c5640;
+  --l3: #0a2a1e;
+}
+
+[data-leather='navy'],
+[data-tone='navy'] {
+  --l1: #3552a0;
+  --l2: #1f3770;
+  --l3: #0b1632;
+}
+
+[data-leather='umber'],
+[data-tone='umber'] {
+  --l1: #8a5a31;
+  --l2: #5f3c1e;
+  --l3: #2c1a0b;
+}
+
+[data-leather='plum'],
+[data-tone='plum'] {
+  --l1: #7c3b70;
+  --l2: #552048;
+  --l3: #26102a;
+}
+
+[data-leather='onyx'],
+[data-tone='onyx'] {
+  --l1: #4d4953;
+  --l2: #2d2a33;
+  --l3: #0f0e12;
+}
+
+[data-leather='teal'],
+[data-tone='teal'] {
+  --l1: #2a8087;
+  --l2: #175960;
+  --l3: #082b30;
+}
+
+[data-tone='forest'] {
+  --l1: #416d3b;
+  --l2: #2b4b29;
+  --l3: #112013;
+}
+
+[data-tone='olive'] {
+  --l1: #716c2d;
+  --l2: #4c481a;
+  --l3: #211f0a;
+}
+
+[data-tone='ink'] {
+  --l1: #3c3c56;
+  --l2: #242438;
+  --l3: #0d0d18;
+}
+
+[data-tone='tan'] {
+  --l1: #b58f58;
+  --l2: #876639;
+  --l3: #43301a;
+}
+
+/* ── A real book ────────────────────────────────────────────────────────── */
+
+.book {
+  --bw: calc(var(--u) * var(--w) * var(--zoom));
+  --bh: calc(var(--u) * var(--h) * var(--hero-scale));
+  --bd: calc(var(--u) * var(--d) * var(--zoom));
+  --spine-type: max(9px, calc(var(--u) * var(--zoom) * 15 * var(--fit, 1)));
+
+  position: relative;
+  display: block;
+  flex: none;
+  width: var(--bw);
+  height: var(--bh);
+  margin: 0 calc(var(--u) * 1.5);
+  color: inherit;
+  text-decoration: none;
+  perspective: calc(var(--u) * 800);
+  perspective-origin: 50% -9%;
+  -webkit-tap-highlight-color: transparent;
+  transition: perspective-origin 0.5s cubic-bezier(0.2, 0.9, 0.25, 1);
+}
+
+/* a warm glow behind the book while you point at it */
+.book::after {
+  content: '';
+  position: absolute;
+  inset: -8% -34%;
+  z-index: -1;
+  pointer-events: none;
+  background: radial-gradient(ellipse 50% 50% at 50% 50%, rgba(255, 196, 112, 0.42), rgba(255, 196, 112, 0) 72%);
+  opacity: 0;
+  transition: opacity 0.4s;
+}
+
+.book__shadow {
+  position: absolute;
+  right: -7%;
+  bottom: calc(var(--u) * -3);
+  left: -7%;
+  height: calc(var(--u) * 14);
+  background: radial-gradient(ellipse 50% 50% at 50% 50%, rgba(0, 0, 0, 0.78), rgba(0, 0, 0, 0) 100%);
+  transition: transform 0.5s cubic-bezier(0.2, 0.9, 0.25, 1), opacity 0.5s;
+}
+
+.book__body {
+  position: absolute;
+  inset: 0;
+  transform-style: preserve-3d;
+  transform-origin: 50% 50% 0;
+  transition: transform 0.5s cubic-bezier(0.2, 0.9, 0.25, 1);
+}
+
+.book__face {
+  position: absolute;
+  display: block;
+  backface-visibility: hidden;
+}
+
+/* The spine: gold lines and raised bands, a rounded shape, leather grain. */
+.book__spine {
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding-top: calc(var(--bh) * 0.105);
+  padding-bottom: calc(var(--bh) * 0.14);
+  border-radius: calc(var(--u) * 2) calc(var(--u) * 2) calc(var(--u) * 1) calc(var(--u) * 1);
+  background:
+    /* gold lines tooled into the leather */
+    linear-gradient(
+      180deg,
+      transparent 0 4.5%,
+      var(--gilt) 4.5% 5%,
+      transparent 5% 5.6%,
+      var(--gilt) 5.6% 6.1%,
+      transparent 6.1% 29.4%,
+      var(--gilt-dim) 29.4% 30%,
+      transparent 30% 87.6%,
+      var(--gilt-dim) 87.6% 88.1%,
+      transparent 88.1% 91.4%,
+      var(--gilt) 91.4% 91.9%,
+      transparent 91.9% 92.5%,
+      var(--gilt) 92.5% 93%,
+      transparent 93%
+    ),
+    /* raised bands: a light top edge and a dark lower edge */
+    linear-gradient(
+      180deg,
+      transparent 0 3.4%,
+      rgba(255, 226, 170, 0.3) 3.4% 4%,
+      rgba(255, 255, 255, 0.06) 4% 6.4%,
+      rgba(0, 0, 0, 0.5) 6.4% 7.2%,
+      transparent 7.2% 90%,
+      rgba(255, 226, 170, 0.3) 90% 90.6%,
+      rgba(255, 255, 255, 0.06) 90.6% 93.4%,
+      rgba(0, 0, 0, 0.5) 93.4% 94.2%,
+      transparent 94.2%
+    ),
+    /* leather folded over at the head and the tail */
+    linear-gradient(180deg, rgba(0, 0, 0, 0.48), rgba(0, 0, 0, 0) 2.6%, rgba(0, 0, 0, 0) 97%, rgba(0, 0, 0, 0.55)),
+    /* candlelight from above, shade from the shelf below */
+    linear-gradient(180deg, rgba(255, 214, 150, 0.12), rgba(255, 214, 150, 0) 36%, rgba(0, 0, 0, 0.32)),
+    /* the rounded back of the spine, with a soft shine */
+    linear-gradient(
+      90deg,
+      rgba(0, 0, 0, 0.62) 0,
+      rgba(0, 0, 0, 0.2) 9%,
+      rgba(255, 238, 205, 0.16) 26%,
+      rgba(255, 238, 205, 0.04) 44%,
+      rgba(0, 0, 0, 0.16) 72%,
+      rgba(0, 0, 0, 0.7) 100%
+    ),
+    var(--tex-glint),
+    var(--tex-speckle),
+    linear-gradient(90deg, var(--l3), var(--l2) 15%, var(--l1) 36%, var(--l2) 64%, var(--l3));
+  background-size:
+    100% 100%,
+    100% 100%,
+    100% 100%,
+    100% 100%,
+    100% 100%,
+    120px 120px,
+    120px 120px,
+    100% 100%;
+}
+
+.spine__emblem {
+  flex: none;
+  width: calc(var(--bw) * 0.56);
+  height: calc(var(--bw) * 0.56);
+  margin-bottom: calc(var(--bh) * 0.035);
+  filter: drop-shadow(0 1px 0 rgba(0, 0, 0, 0.65));
+}
+
+.spine__emblem .emblem {
+  display: block;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+
+/* The title sits on a darker label, outlined in gold, so it is easy to read. */
+.spine__label {
+  position: relative;
+  flex: 1 1 auto;
+  align-self: stretch;
+  min-height: 0;
+  margin: 0 calc(var(--bw) * 0.17);
+  background: linear-gradient(90deg, rgba(0, 0, 0, 0.36), rgba(0, 0, 0, 0.2) 50%, rgba(0, 0, 0, 0.36));
+  box-shadow:
+    inset 0 0 0 1px var(--gilt-dim),
+    inset 0 0 0 3px rgba(0, 0, 0, 0.34),
+    inset 0 0 0 4px var(--gilt-dim);
+}
+
+.spine__title {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 50%;
+  padding: 0.5em 0;
+  overflow: hidden;
+  font-family: var(--font-caps);
+  font-size: var(--spine-type);
+  font-weight: 700;
+  line-height: 1.15;
+  letter-spacing: 0.07em;
+  text-align: center;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: var(--gilt);
+  text-shadow: 0 1px 0 rgba(0, 0, 0, 0.8), 0 0 8px rgba(255, 200, 110, 0.18);
+  writing-mode: vertical-rl;
+  transform: translateX(-50%);
+}
+
+/* a title with several words may use two lines (see titleFit in book.mjs) */
+.spine__title[data-lines='2'] {
+  text-wrap: balance;
+  white-space: normal;
+}
+
+/* The front cover, on the right-hand side of the box. */
+.book__cover {
+  top: 0;
+  left: 100%;
+  width: var(--bd);
+  height: 100%;
+  transform-origin: 0 50%;
+  transform: rotateY(90deg);
+  background:
+    /* the groove where the cover bends next to the spine */
+    linear-gradient(
+      90deg,
+      rgba(0, 0, 0, 0.55) 0,
+      rgba(0, 0, 0, 0) 3.5%,
+      rgba(0, 0, 0, 0.4) 5.2%,
+      rgba(255, 238, 205, 0.14) 6.6%,
+      rgba(255, 238, 205, 0) 9%
+    ),
+    linear-gradient(180deg, rgba(255, 214, 150, 0.1), rgba(255, 214, 150, 0) 40%, rgba(0, 0, 0, 0.3)),
+    linear-gradient(90deg, rgba(0, 0, 0, 0) 55%, rgba(0, 0, 0, 0.45) 100%),
+    var(--tex-glint),
+    var(--tex-speckle),
+    linear-gradient(90deg, var(--l3), var(--l2) 12%, var(--l1) 50%, var(--l2) 90%, var(--l3));
+  background-size: 100% 100%, 100% 100%, 100% 100%, 120px 120px, 120px 120px, 100% 100%;
+}
+
+.cover__frame {
+  position: absolute;
+  inset: calc(var(--bh) * 0.055) calc(var(--bd) * 0.09) calc(var(--bh) * 0.055) calc(var(--bd) * 0.15);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: calc(var(--u) * var(--zoom) * 6);
+  padding: 0 calc(var(--bd) * 0.04);
+  text-align: center;
+  box-shadow:
+    inset 0 0 0 1px var(--gilt-dim),
+    inset 0 0 0 4px rgba(0, 0, 0, 0.2),
+    inset 0 0 0 5px var(--gilt-dim);
+}
+
+.cover__emblem {
+  width: calc(var(--bd) * 0.32);
+  height: calc(var(--bd) * 0.32);
+  filter: drop-shadow(0 1px 0 rgba(0, 0, 0, 0.65));
+}
+
+.cover__emblem .emblem {
+  display: block;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+
+.cover__title {
+  font-family: var(--font-caps);
+  font-size: calc(var(--u) * var(--zoom) * 14);
+  font-weight: 700;
+  line-height: 1.15;
+  letter-spacing: 0.07em;
+  text-wrap: balance;
+  color: var(--gilt);
+  text-shadow: 0 1px 0 rgba(0, 0, 0, 0.75);
+}
+
+.cover__rule {
+  position: relative;
+  width: 46%;
+  height: 1px;
+  background: var(--gilt-dim);
+}
+
+.cover__rule::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: calc(var(--u) * var(--zoom) * 5);
+  height: calc(var(--u) * var(--zoom) * 5);
+  background: var(--gilt);
+  transform: translate(-50%, -50%) rotate(45deg);
+}
+
+.cover__tagline {
+  max-width: 100%;
+  font-family: var(--font-old);
+  font-size: calc(var(--u) * var(--zoom) * 10.5);
+  font-style: italic;
+  line-height: 1.25;
+  text-wrap: balance;
+  color: var(--gold-100);
+}
+
+/* The top: gold-edged pages between two thin covers, with the spine in front. */
+.book__top {
+  bottom: 100%;
+  left: 0;
+  width: 100%;
+  height: var(--bd);
+  transform-origin: 50% 100%;
+  transform: rotateX(90deg);
+  background:
+    linear-gradient(0deg, var(--l2) 0 3.2%, rgba(0, 0, 0, 0) 3.2%),
+    linear-gradient(90deg, var(--l2) 0 5%, rgba(0, 0, 0, 0) 5% 95%, var(--l2) 95%),
+    linear-gradient(0deg, rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0) 40%, rgba(0, 0, 0, 0.22)),
+    repeating-linear-gradient(90deg, rgba(90, 60, 20, 0.16) 0 1px, rgba(0, 0, 0, 0) 1px 3px),
+    linear-gradient(90deg, #bfae82, #e0d1a4 45%, #bfae82);
+}
+
+/* ── Pointing at a book ─────────────────────────────────────────────────── */
+
+.book:focus-visible {
+  z-index: 5;
+  border-radius: 3px;
+  outline-offset: calc(var(--u) * 5);
+}
+
+.book:focus-visible::after {
+  opacity: 1;
+}
+
+.book:focus-visible {
+  perspective-origin: 50% -34%;
+}
+
+.book:focus-visible .book__body {
+  transform: translateZ(calc(var(--u) * 30)) rotateY(-20deg);
+}
+
+.book:focus-visible .book__shadow {
+  transform: translate(calc(var(--u) * 7), calc(var(--u) * 2)) scale(1.18, 1.5);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .book:hover {
+    z-index: 5;
+  }
+
+  .book:hover::after {
+    opacity: 1;
+  }
+
+  .book:hover {
+    perspective-origin: 50% -34%;
+  }
+
+  .book:hover .book__body {
+    transform: translateZ(calc(var(--u) * 30)) rotateY(-20deg);
+  }
+
+  .book:hover .book__shadow {
+    transform: translate(calc(var(--u) * 7), calc(var(--u) * 2)) scale(1.18, 1.5);
+  }
+}
+
+/* A finger pressing on a touch screen */
+.book:active .book__body {
+  transform: translateZ(calc(var(--u) * 16));
+}
+
+/* Clicked: the book comes right out and turns to show its cover (room.js). */
+.book.is-opening {
+  z-index: 6;
+}
+
+.book.is-opening::after {
+  opacity: 1;
+}
+
+.book.is-opening .book__body {
+  transform: translateZ(calc(var(--u) * 110)) rotateY(-58deg);
+  transition-duration: 0.62s;
+}
+
+/* ── Old decorative books ───────────────────────────────────────────────── */
+
+.shelf__group {
+  min-width: 0;
+  flex: 0 1 auto;
+}
+
+.tome {
+  position: relative;
+  display: block;
+  flex: 0 1 auto;
+  width: calc(var(--u) * var(--w));
+  min-width: calc(var(--u) * 9);
+  height: calc(var(--u) * var(--h));
+  margin-right: calc(var(--u) * 1);
+  border-radius: calc(var(--u) * 2) calc(var(--u) * 2) 0 0;
+  background:
+    linear-gradient(180deg, rgba(0, 0, 0, 0.46), rgba(0, 0, 0, 0) 3%, rgba(0, 0, 0, 0) 97%, rgba(0, 0, 0, 0.5)),
+    linear-gradient(180deg, rgba(255, 214, 150, 0.1), rgba(255, 214, 150, 0) 38%, rgba(0, 0, 0, 0.34)),
+    linear-gradient(
+      90deg,
+      rgba(0, 0, 0, 0.6) 0,
+      rgba(0, 0, 0, 0.18) 10%,
+      rgba(255, 238, 205, 0.13) 30%,
+      rgba(0, 0, 0, 0.14) 70%,
+      rgba(0, 0, 0, 0.66) 100%
+    ),
+    var(--tex-glint),
+    var(--tex-speckle),
+    linear-gradient(90deg, var(--l3), var(--l2) 18%, var(--l1) 38%, var(--l2) 66%, var(--l3));
+  background-size: 100% 100%, 100% 100%, 100% 100%, 120px 120px, 120px 120px, 100% 100%;
+  box-shadow: 1px 0 calc(var(--u) * 2) rgba(0, 0, 0, 0.7);
+}
+
+.shelf--hero .tome {
+  height: calc(var(--u) * var(--h) * var(--hero-scale));
+}
+
+/* gold bands across the spine */
+.tome__band {
+  position: absolute;
+  right: 0;
+  left: 0;
+  height: calc(var(--u) * 4);
+  background: linear-gradient(
+    180deg,
+    var(--gilt-dim) 0 28%,
+    rgba(0, 0, 0, 0) 28% 56%,
+    var(--gilt-dim) 56% 84%,
+    rgba(0, 0, 0, 0) 84%
+  );
+}
+
+.tome__band--top {
+  top: 10%;
+}
+
+.tome__band--bottom {
+  bottom: 10%;
+}
+
+/* a small label, like the one on a real spine */
+.tome__plate {
+  position: absolute;
+  top: 26%;
+  right: 17%;
+  left: 17%;
+  height: 26%;
+  background: linear-gradient(90deg, rgba(0, 0, 0, 0.36), rgba(0, 0, 0, 0.2) 50%, rgba(0, 0, 0, 0.36));
+  box-shadow: inset 0 0 0 1px var(--gilt-dim);
+}
+
+.tome__plate::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 34%;
+  max-width: calc(var(--u) * 6);
+  aspect-ratio: 1;
+  background: var(--gilt-dim);
+  transform: translate(-50%, -50%) rotate(45deg);
+}
+
+/* ── Objects on the shelves ─────────────────────────────────────────────── */
+
+.object {
+  position: relative;
+  display: block;
+  flex: none;
+  margin: 0 calc(var(--u) * 4);
+}
+
+/* books lying flat, seen from the edge of the pages */
+.flatbooks {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  display: flex;
+  flex-direction: column-reverse;
+  align-items: center;
+}
+
+.flatbooks i {
+  display: block;
+  width: calc(var(--u) * var(--w));
+  height: calc(var(--u) * var(--h));
+  border-radius: calc(var(--u) * 4) calc(var(--u) * 1.5) calc(var(--u) * 1.5) calc(var(--u) * 4);
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.16), rgba(255, 255, 255, 0) 24%, rgba(255, 255, 255, 0) 68%, rgba(0, 0, 0, 0.42)),
+    linear-gradient(90deg, var(--l2) 0 9%, rgba(0, 0, 0, 0) 9%),
+    repeating-linear-gradient(180deg, rgba(60, 40, 10, 0.16) 0 1px, rgba(0, 0, 0, 0) 1px 3px),
+    linear-gradient(180deg, var(--l1) 0 22%, #d6c59a 22% 78%, var(--l2) 78% 100%);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.65);
+}
+
+/* A candle in a brass holder, on a stack of books. */
+.object--candle {
+  width: calc(var(--u) * 104);
+  height: calc(var(--u) * 106);
+}
+
+.candle {
+  position: absolute;
+  bottom: calc(var(--u) * 49);
+  left: 50%;
+  width: calc(var(--u) * 44);
+  height: calc(var(--u) * 62);
+  transform: translateX(-50%);
+}
+
+.candle i {
+  position: absolute;
+  left: 50%;
+  display: block;
+}
+
+.candle__glow {
+  bottom: calc(var(--u) * 44);
+  width: calc(var(--u) * 190);
+  height: calc(var(--u) * 190);
+  transform: translate(-50%, 50%);
+  background: radial-gradient(circle, rgba(255, 208, 130, 0.42), rgba(255, 170, 80, 0.15) 34%, rgba(255, 150, 60, 0) 66%);
+  animation: glow 4.2s ease-in-out infinite;
+  pointer-events: none;
+}
+
+.candle__dish {
+  bottom: 0;
+  width: 100%;
+  height: calc(var(--u) * 6);
+  transform: translateX(-50%);
+  border-radius: 50% / 70%;
+  background: linear-gradient(90deg, #6e4d12, #f0d98f 42%, #8a6418);
+  box-shadow: 0 calc(var(--u) * 2) calc(var(--u) * 3) rgba(0, 0, 0, 0.65);
+}
+
+.candle__stem {
+  bottom: calc(var(--u) * 4);
+  width: calc(var(--u) * 7);
+  height: calc(var(--u) * 15);
+  transform: translateX(-50%);
+  background: linear-gradient(90deg, #6e4d12, #f0d98f 42%, #8a6418);
+}
+
+.candle__wax {
+  bottom: calc(var(--u) * 17);
+  width: calc(var(--u) * 13);
+  height: calc(var(--u) * 24);
+  transform: translateX(-50%);
+  border-radius: calc(var(--u) * 2) calc(var(--u) * 2) 0 0;
+  background: linear-gradient(90deg, #c9bb8f, #fff6d6 42%, #bfae7e);
+  box-shadow: 0 0 calc(var(--u) * 6) rgba(255, 220, 150, 0.3);
+}
+
+.candle__flame {
+  bottom: calc(var(--u) * 41);
+  width: calc(var(--u) * 8);
+  height: calc(var(--u) * 18);
+  transform: translateX(-50%);
+  transform-origin: 50% 100%;
+  border-radius: 50% 50% 50% 50% / 62% 62% 38% 38%;
+  background: radial-gradient(ellipse at 50% 72%, #fff8d8 0, #ffd46f 38%, #ff9b3d 72%, rgba(255, 140, 40, 0) 100%);
+  box-shadow: 0 0 calc(var(--u) * 14) calc(var(--u) * 5) rgba(255, 190, 100, 0.6);
+  animation: flicker 3.1s ease-in-out infinite;
+}
+
+/* An armillary sphere: a brass model of the heavens. */
+.object--armillary {
+  width: calc(var(--u) * 86);
+  height: calc(var(--u) * 107);
+}
+
+.object--armillary svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+  filter: drop-shadow(0 calc(var(--u) * 2) calc(var(--u) * 3) rgba(0, 0, 0, 0.7)) drop-shadow(0 0 calc(var(--u) * 8) rgba(255, 190, 100, 0.2));
+}
+
+/* A scroll resting on a stack of books. */
+.object--stack {
+  width: calc(var(--u) * 104);
+  height: calc(var(--u) * 80);
+}
+
+.scroll {
+  position: absolute;
+  bottom: calc(var(--u) * 62);
+  left: 50%;
+  display: block;
+  width: calc(var(--u) * 78);
+  height: calc(var(--u) * 15);
+  transform: translateX(-50%) rotate(-2.5deg);
+  border-radius: calc(var(--u) * 7) / 50%;
+  background:
+    linear-gradient(90deg, rgba(120, 20, 30, 0) 40%, #7a1c28 40% 44%, rgba(120, 20, 30, 0) 44%),
+    linear-gradient(180deg, #8f7a4c 0, #e6d3a4 24%, #f3e6bd 46%, #cdb680 74%, #7c6a3e 100%);
+  box-shadow: 0 calc(var(--u) * 2) calc(var(--u) * 3) rgba(0, 0, 0, 0.6);
+}
+
+.scroll::after {
+  content: '';
+  position: absolute;
+  top: 8%;
+  right: 0;
+  bottom: 8%;
+  width: calc(var(--u) * 9);
+  border-radius: 50%;
+  background: radial-gradient(ellipse, #c9b27c 0 30%, #8f7a4c 31% 36%, #e9d9ab 37% 52%, #a48f5e 53% 58%, #d7c28f 59%);
+}

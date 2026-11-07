@@ -1,0 +1,261 @@
+/* ─────────────────────────────────────────────────────────────────────────────
+   THE BOOKCASE
+   A tall walnut case with a carved top, fluted sides, shelf boards and a base.
+   The books and objects that stand on its shelves are in books.css.
+   Its height is worked out from how many shelves it needs, so adding a book
+   (and so a shelf) never needs any change here.
+   ───────────────────────────────────────────────────────────────────────────── */
+
+.bookcase {
+  position: absolute;
+  left: calc(50% - var(--u) * 300);
+  bottom: calc(var(--u) * (var(--floor-h) - var(--stand)));
+  display: flex;
+  flex-direction: column;
+  width: calc(var(--u) * 600);
+}
+
+/* It stands against the wall and on the floor, so it casts soft shadows on both. */
+.bookcase::before {
+  content: '';
+  position: absolute;
+  inset: calc(var(--u) * 10) calc(var(--u) * -8) 0;
+  z-index: -1;
+  box-shadow:
+    0 calc(var(--u) * 26) calc(var(--u) * 60) rgba(0, 0, 0, 0.7),
+    0 0 calc(var(--u) * 110) rgba(0, 0, 0, 0.55);
+}
+
+.bookcase::after {
+  content: '';
+  position: absolute;
+  right: calc(var(--u) * -50);
+  bottom: calc(var(--u) * -26);
+  left: calc(var(--u) * -50);
+  z-index: -1;
+  height: calc(var(--u) * 64);
+  background: radial-gradient(ellipse 50% 50% at 50% 38%, rgba(0, 0, 0, 0.85), rgba(0, 0, 0, 0) 100%);
+}
+
+/* ── The carved top, with the brass name plate ──────────────────────────── */
+
+.bookcase__crown {
+  position: relative;
+  z-index: 3;
+  height: calc(var(--u) * var(--crown-h));
+  margin: 0 calc(var(--u) * -18);
+  background:
+    linear-gradient(180deg, rgba(0, 0, 0, 0) 0, rgba(0, 0, 0, 0.18) 100%),
+    var(--tex-wood-h),
+    linear-gradient(
+      180deg,
+      #8a5d34 0,
+      #5e3b1e calc(var(--u) * 3),
+      #3c2412 calc(var(--u) * 11),
+      #20120a calc(var(--u) * 13),
+      #2c1a0d calc(var(--u) * 13),
+      #4a2f19 calc(var(--u) * 21),
+      #24150a calc(var(--u) * 29),
+      #5a3a1e calc(var(--u) * 29),
+      #3a2412 calc(var(--u) * 35),
+      #2a190c calc(var(--u) * 71),
+      #7a5230 calc(var(--u) * 71),
+      #4a2f19 calc(var(--u) * 75),
+      #1c0f07 100%
+    );
+  box-shadow:
+    0 calc(var(--u) * 10) calc(var(--u) * 18) rgba(0, 0, 0, 0.65),
+    inset 0 calc(var(--u) * 1.5) 0 rgba(255, 220, 160, 0.3);
+}
+
+/* a thin line of gold inlay running along the middle band */
+.bookcase__crown::before {
+  content: '';
+  position: absolute;
+  inset: calc(var(--u) * 38) calc(var(--u) * 30) calc(var(--u) * 17);
+  border: 1px solid rgba(212, 169, 73, 0.4);
+}
+
+.plate {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: max-content;
+  min-width: calc(var(--u) * 250);
+  max-width: 88%;
+  padding: calc(var(--u) * 5) calc(var(--u) * 26) calc(var(--u) * 6);
+  text-align: center;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.32), rgba(255, 255, 255, 0) 45%, rgba(0, 0, 0, 0.14)),
+    var(--foil);
+  border-radius: calc(var(--u) * 3);
+  box-shadow:
+    0 calc(var(--u) * 4) calc(var(--u) * 9) rgba(0, 0, 0, 0.7),
+    inset 0 0 0 calc(var(--u) * 1.5) rgba(110, 77, 18, 0.8),
+    inset 0 0 0 calc(var(--u) * 3.5) rgba(255, 240, 190, 0.42);
+  transform: translate(-50%, -50%);
+}
+
+.plate__title {
+  margin: 0;
+  font-family: var(--font-caps);
+  font-size: max(14px, calc(var(--u) * 21));
+  font-weight: 700;
+  line-height: 1.15;
+  letter-spacing: 0.12em;
+  text-wrap: balance;
+  color: #2a1706;
+  text-shadow: 0 1px 0 rgba(255, 244, 200, 0.55);
+}
+
+.plate__tagline {
+  margin: calc(var(--u) * 1) 0 0;
+  font-family: var(--font-old);
+  font-size: max(11px, calc(var(--u) * 11.5));
+  font-style: italic;
+  line-height: 1.2;
+  color: #3a2208;
+}
+
+/* ── Sides and the shelves between them ─────────────────────────────────── */
+
+.bookcase__frame {
+  position: relative;
+  display: block;
+  padding: 0 calc(var(--u) * 36);
+}
+
+.bookcase__frame::before,
+.bookcase__frame::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  z-index: 2;
+  width: calc(var(--u) * 36);
+  background:
+    repeating-linear-gradient(90deg, rgba(0, 0, 0, 0.5) 0 calc(var(--u) * 1.6), rgba(255, 220, 170, 0.1) calc(var(--u) * 1.6) calc(var(--u) * 3.2), rgba(0, 0, 0, 0) calc(var(--u) * 3.2) calc(var(--u) * 7)),
+    var(--tex-wood-v),
+    linear-gradient(90deg, #24140a, #5a3a1e 42%, #3a2412 62%, #1a0e06);
+  box-shadow: inset 0 0 0 calc(var(--u) * 1) rgba(212, 169, 73, 0.3);
+}
+
+.bookcase__frame::before {
+  left: 0;
+  box-shadow:
+    inset 0 0 0 calc(var(--u) * 1) rgba(212, 169, 73, 0.3),
+    calc(var(--u) * 4) 0 calc(var(--u) * 10) rgba(0, 0, 0, 0.6);
+}
+
+.bookcase__frame::after {
+  right: 0;
+  box-shadow:
+    inset 0 0 0 calc(var(--u) * 1) rgba(212, 169, 73, 0.3),
+    calc(var(--u) * -4) 0 calc(var(--u) * 10) rgba(0, 0, 0, 0.6);
+}
+
+/* The back of the case: dark wood, lit by candles in the middle. */
+.bookcase__inside {
+  position: relative;
+  background:
+    radial-gradient(ellipse 70% 60% at 50% 34%, rgba(255, 190, 110, 0.13), rgba(255, 190, 110, 0) 72%),
+    var(--tex-wood-v),
+    linear-gradient(90deg, #120a05, #22130a 50%, #120a05);
+  box-shadow:
+    inset 0 calc(var(--u) * 16) calc(var(--u) * 26) rgba(0, 0, 0, 0.8),
+    inset calc(var(--u) * 12) 0 calc(var(--u) * 20) rgba(0, 0, 0, 0.55),
+    inset calc(var(--u) * -12) 0 calc(var(--u) * 20) rgba(0, 0, 0, 0.55);
+}
+
+.shelf {
+  position: relative;
+  height: calc(var(--u) * var(--shelf-h));
+}
+
+.shelf--hero {
+  height: calc(var(--u) * var(--shelf-h) * var(--hero-scale));
+}
+
+/* The shadow each shelf board throws on the shelf below it. One part falls on
+   the back of the case (behind the books), one on the books themselves. A book
+   you point at has a higher z-index (books.css), so it stays out of the shadow. */
+.shelf::before,
+.shelf::after {
+  content: '';
+  position: absolute;
+  inset: 0 0 calc(var(--u) * var(--board-h));
+  pointer-events: none;
+}
+
+.shelf::before {
+  background: linear-gradient(180deg, rgba(0, 0, 0, 0.62), rgba(0, 0, 0, 0) 34%);
+}
+
+.shelf::after {
+  z-index: 2;
+  background: linear-gradient(180deg, rgba(0, 0, 0, 0.34), rgba(0, 0, 0, 0) 26%);
+}
+
+.shelf__row {
+  position: absolute;
+  right: calc(var(--u) * 10);
+  bottom: calc(var(--u) * var(--board-h));
+  left: calc(var(--u) * 10);
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+}
+
+.shelf__group {
+  display: flex;
+  align-items: flex-end;
+}
+
+.shelf__board {
+  position: absolute;
+  right: calc(var(--u) * -3);
+  bottom: 0;
+  left: calc(var(--u) * -3);
+  height: calc(var(--u) * var(--board-h));
+  background:
+    var(--tex-wood-h),
+    linear-gradient(
+      180deg,
+      #9a6a3a 0,
+      #6e4626 calc(var(--u) * 4),
+      #4a2e16 calc(var(--u) * 5),
+      #3a2412 calc(var(--u) * 11),
+      #1c0f07 100%
+    );
+  box-shadow:
+    0 calc(var(--u) * 7) calc(var(--u) * 10) rgba(0, 0, 0, 0.7),
+    inset 0 calc(var(--u) * 1) 0 rgba(255, 225, 170, 0.35);
+}
+
+/* ── Base ───────────────────────────────────────────────────────────────── */
+
+.bookcase__plinth {
+  position: relative;
+  z-index: 3;
+  height: calc(var(--u) * var(--plinth-h));
+  margin: 0 calc(var(--u) * -12);
+  background:
+    var(--tex-wood-h),
+    linear-gradient(
+      180deg,
+      #7a5230 0,
+      #4a2f19 calc(var(--u) * 4),
+      #2c1a0d calc(var(--u) * 5),
+      #3c2412 calc(var(--u) * 16),
+      #5a3a1e calc(var(--u) * 17),
+      #2a190c calc(var(--u) * 22),
+      #1a0e06 100%
+    );
+  box-shadow:
+    0 calc(var(--u) * 10) calc(var(--u) * 18) rgba(0, 0, 0, 0.65),
+    inset 0 calc(var(--u) * 1.5) 0 rgba(255, 220, 160, 0.28);
+}
