@@ -23,7 +23,7 @@ export const books = [
   {
     id: 'about',
     title: 'About Me',
-    tagline: 'Who I am, and where I come from',
+    tagline: 'Who I am & What is family Library',
 
     // 'page'       = a single page, written in one file  (content/about.md)
     // 'collection' = many dated entries, one file each   (content/blog/…)

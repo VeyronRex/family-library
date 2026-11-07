@@ -6,13 +6,13 @@
 
 export default {
   // The name of your library. It is carved on the brass plate above the shelves.
-  title: 'My Library',
+  title: 'Family Library',
 
   // One line under the name.
-  tagline: 'Stories, lessons and days worth remembering',
+  tagline: 'Stories, lessons and Experiences',
 
   // Your name. It appears in the footer of every page.
-  owner: 'Your Name',
+  owner: 'Veyron Rex',
 
   // Language of the pages: 'en-GB' (18 November 2026), 'en' (November 18, 2026),
   // 'bn' for Bangla, and so on.
@@ -23,7 +23,7 @@ export default {
   description: 'A personal library of stories, lessons and daily notes, kept for my family.',
 
   // A line at the bottom of every page.
-  footerNote: 'Written by hand, kept for the ones I love.',
+  footerNote: 'For my loved ones.',
 
   // Should search engines such as Google list this site?
   //   false = ask them to stay away (good for a private family library)
