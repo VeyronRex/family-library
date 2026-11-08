@@ -60,7 +60,7 @@ Remember even before you were born, you are destined to become Great. You are th
 
 Be the Strongest,  
 Your Father  
-08.09.2026
+08.11.2026
 
 :::
 
